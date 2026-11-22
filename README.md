@@ -4,6 +4,10 @@ AI-assisted security event monitoring and anomaly detection.
 
 CyberWatch is a runnable portfolio MVP that accepts security events, scores suspicious activity with an Isolation Forest model, applies transparent detection rules, and displays alerts in a React SOC dashboard.
 
+## Project status
+
+The portfolio MVP is complete. See [verified status and remaining production limitations](docs/PROJECT_STATUS.md).
+
 ## Features
 
 - FastAPI backend with health, event ingestion, CSV upload, alert and metric endpoints
