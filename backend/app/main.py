@@ -141,7 +141,7 @@ def health() -> dict:
 
 
 @app.get("/api/events")
-def list_events(limit: int = 100) -> dict:
+def list_events(limit: int = Query(default=100, ge=1, le=500)) -> dict:
     return {"items": EVENTS[-max(1, min(limit, 500)):][::-1], "total": len(EVENTS)}
 
 
