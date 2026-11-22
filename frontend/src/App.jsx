@@ -134,7 +134,7 @@ export default function App() {
         <Metric icon={Activity} label="Events analyzed" value={metrics?.total_events ?? "—"} note="Total ingested events" />
         <Metric icon={AlertTriangle} label="Suspicious events" value={metrics?.suspicious_events ?? "—"} note="Flagged by AI and rules" tone="orange"/>
         <Metric icon={Zap} label="Open alerts" value={metrics?.open_alerts ?? "—"} note="Require investigation" tone="red"/>
-        <Metric icon={ShieldCheck} label="Detection rate" value={metrics ? `${metrics.detection_rate}%` : "—"} note="Flagged / analyzed" tone="green"/>
+        <Metric icon={ShieldCheck} label="Flagged rate" value={metrics ? `${metrics.flagged_rate ?? metrics.detection_rate}%` : "—"} note="Flagged / analyzed · not accuracy" tone="green"/>
       </section>
       <section className="content-grid">
         <article className="panel alerts-panel"><div className="panel-heading"><div><h2>Priority alerts</h2><p>Most recent suspicious activity</p></div><div className="alert-filters"><select aria-label="Filter alerts by status" value={alertStatusFilter} onChange={event => setAlertStatusFilter(event.target.value)}><option value="all">All statuses</option><option value="open">Open</option><option value="acknowledged">Acknowledged</option><option value="resolved">Resolved</option></select><select aria-label="Filter alerts by severity" value={alertSeverityFilter} onChange={event => setAlertSeverityFilter(event.target.value)}><option value="all">All severities</option><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select><span className="subtle">{alerts.length} SHOWN</span></div></div>
