@@ -39,3 +39,14 @@ jobs:
       - uses: actions/checkout@v4
       - run: docker build -t cyberwatch-api ./backend
       - run: docker compose config --quiet
+      - name: Smoke test API container
+        run: |
+          docker run -d --name cyberwatch-smoke -p 8000:8000 -e CYBERWATCH_DB_PATH=/tmp/cyberwatch.db cyberwatch-api
+          trap 'docker logs cyberwatch-smoke; docker rm -f cyberwatch-smoke' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8000/health; then
+              exit 0
+            fi
+            sleep 2
+          done
+          exit 1
