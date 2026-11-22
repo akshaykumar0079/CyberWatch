@@ -16,7 +16,8 @@
 - [ ] CIC-IDS2017 benchmark with documented label mapping
 - [ ] UNSW-NB15 external validation
 - [x] Group-aware and chronological holdout split options with tests
-- [ ] Threshold calibration and false-positive analysis
+- [x] Offline risk-score threshold calibration utility with FPR constraints
+- [ ] Real-dataset threshold calibration and false-positive analysis
 - [x] Model card with limitations and dataset provenance
 
 ## Platform engineering
@@ -24,8 +25,6 @@
 - [ ] Authentication and role-based access
 - [x] WebSocket event streaming with cursor support and polling fallback
 - [x] Alert acknowledgement, resolution, assignment, notes and status/severity filters
-- [x] Persist analyst investigation notes on alerts
-- [x] Free-text analyst assignment and unassignment in the SOC dashboard
 - [x] In-memory per-client API rate limiting for single-process deployments
 - [x] Metadata-only API write audit log persisted in SQLite
 - [ ] Distributed rate limiting for multi-instance deployments
