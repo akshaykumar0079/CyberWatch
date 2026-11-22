@@ -92,6 +92,7 @@ Then open the dashboard and inspect the alerts.
 | PATCH | `/api/alerts/{id}` | Change alert status to `open`, `acknowledged` or `resolved` |
 | POST | `/api/alerts/{id}/notes` | Add an investigation note to an alert |
 | GET | `/api/metrics` | Dashboard metrics |
+| GET | `/api/audit` | Recent metadata-only API write audit entries |
 
 ## Event CSV format
 
