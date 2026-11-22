@@ -37,6 +37,10 @@ class AlertStatusUpdate(BaseModel):
     status: Literal["open", "acknowledged", "resolved"]
 
 
+class AlertNoteInput(BaseModel):
+    text: str = Field(min_length=1, max_length=1000)
+
+
 class SecurityEvent(BaseModel):
     timestamp: str | None = None
     src_ip: str = "0.0.0.0"
@@ -66,6 +70,7 @@ def process_event(raw: dict[str, Any]) -> dict[str, Any]:
             "risk_score": result["risk_score"],
             "title": result["reasons"][0],
             "status": "open",
+            "notes": [],
         }
         storage.save_alert(alert)
         ALERTS.insert(0, alert)
@@ -153,6 +158,21 @@ def update_alert_status(
     alert["status"] = payload.status
     return {"item": alert}
 
+
+
+@app.post("/api/alerts/{alert_id}/notes")
+def add_alert_note(alert_id: int, payload: AlertNoteInput) -> dict:
+    """Add a short investigation note to an alert."""
+    note = payload.text.strip()
+    if not note:
+        raise HTTPException(status_code=422, detail="Note cannot be empty")
+    updated = storage.append_alert_note(alert_id, note)
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    cached = next((item for item in ALERTS if item["id"] == alert_id), None)
+    if cached is not None:
+        cached["notes"] = updated["notes"]
+    return {"item": updated}
 
 @app.get("/api/metrics")
 def metrics() -> dict:
