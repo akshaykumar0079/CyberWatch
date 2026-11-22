@@ -19,7 +19,7 @@ CyberWatch currently contains two separate ML workflows. They are intentionally 
 - Rule thresholds: failed logins >= 5; packet count >= 500 for non-web destination ports; explicit privilege-escalation event types
 - Risk scores and severity labels combine the anomaly score with the visible rule thresholds
 
-The synthetic baseline makes the demo reproducible. It does not represent a measured enterprise network distribution.
+The synthetic baseline makes the demo reproducible. It does not represent a measured enterprise network distribution. The dashboard's flagged-rate metric is the percentage of ingested events marked suspicious; it is not accuracy, recall or a validated detection rate.
 
 ## Offline supervised pipeline
 
