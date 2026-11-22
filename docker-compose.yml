@@ -3,8 +3,12 @@ services:
     build:
       context: ./backend
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    environment:
+      CYBERWATCH_DB_PATH: /data/cyberwatch.db
     ports:
       - "8000:8000"
+    volumes:
+      - cyberwatch_data:/data
   dashboard:
     image: node:20-alpine
     working_dir: /app
@@ -15,3 +19,6 @@ services:
       - "5173:5173"
     depends_on:
       - api
+
+volumes:
+  cyberwatch_data:
