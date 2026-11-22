@@ -22,7 +22,7 @@
 ## Platform engineering
 - [x] Durable event and alert persistence (SQLite, single-instance/local deployment)
 - [ ] Authentication and role-based access
-- [ ] WebSocket event streaming
+- [x] WebSocket event streaming with cursor support and polling fallback
 - [x] Alert acknowledgement and resolution API + dashboard actions
 - [x] Persist analyst investigation notes on alerts
 - [ ] Incident assignment and ownership
