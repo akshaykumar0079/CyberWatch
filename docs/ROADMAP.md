@@ -26,7 +26,8 @@
 - [x] Alert acknowledgement and resolution API + dashboard actions
 - [x] Persist analyst investigation notes on alerts
 - [ ] Incident assignment and ownership
-- [x] In-memory per-client API rate limiting for single-process deployments\n- [ ] Durable request audit log and distributed rate limiting
+- [x] In-memory per-client API rate limiting for single-process deployments
+- [ ] Durable request audit log and distributed rate limiting
 - [ ] Deployment configuration and security review
 
 ## Research integrity
