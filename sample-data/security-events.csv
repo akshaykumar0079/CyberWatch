@@ -1,0 +1,5 @@
+timestamp,src_ip,dst_ip,src_port,dst_port,protocol,bytes,packets,failed_logins,username,event_type
+2026-11-22T10:00:00Z,10.0.0.12,10.0.0.2,51022,443,TCP,2400,12,0,alice,network
+2026-11-22T10:01:00Z,185.22.10.4,10.0.0.5,42000,22,TCP,900,8,12,root,authentication
+2026-11-22T10:02:00Z,91.198.4.20,10.0.0.8,53000,3389,TCP,120000,900,0,unknown,network
+2026-11-22T10:03:00Z,10.0.0.44,10.0.0.3,50111,443,TCP,4500,20,0,admin,privilege_escalation
