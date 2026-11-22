@@ -8,3 +8,5 @@
 .alert-assignment{margin-top:6px;color:#93a5bc;font-size:9px}.alert-assignment summary{cursor:pointer;color:#9bb7d4;font:8px 'DM Mono';letter-spacing:.3px}
 
 .alert-filters{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.alert-filters select{background:#0a1422;border:1px solid #2a3b50;color:#9eafc5;border-radius:5px;padding:6px 7px;font:9px Manrope;max-width:130px}@media(max-width:680px){.alert-filters{width:100%}.alert-filters select{flex:1;max-width:none}}
+
+.alert-copy .alert-reasons{white-space:normal;line-height:1.5;color:#8ea1b9;max-width:100%;overflow-wrap:anywhere}
