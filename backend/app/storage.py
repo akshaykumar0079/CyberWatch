@@ -39,6 +39,16 @@ def initialize_store() -> None:
                 status TEXT NOT NULL CHECK(status IN ('open', 'acknowledged', 'resolved'))
             )"""
         )
+        connection.execute(
+            """CREATE TABLE IF NOT EXISTS audit_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT NOT NULL,
+                method TEXT NOT NULL,
+                path TEXT NOT NULL,
+                status_code INTEGER NOT NULL,
+                duration_ms REAL NOT NULL
+            )"""
+        )
         connection.commit()
 
 
@@ -99,6 +109,7 @@ def reset_store() -> None:
     with _connect() as connection:
         connection.execute("DELETE FROM alerts")
         connection.execute("DELETE FROM events")
+        connection.execute("DELETE FROM audit_logs")
         connection.execute("DELETE FROM sqlite_sequence WHERE name = 'events'")
         connection.commit()
 
@@ -123,3 +134,31 @@ def append_alert_note(alert_id: int, note: str) -> dict[str, Any] | None:
         )
         connection.commit()
     return {**payload, "id": alert_id, "status": row["status"]}
+
+
+def record_api_audit(method: str, path: str, status_code: int, duration_ms: float) -> None:
+    """Store metadata for an API write request; never store bodies or credentials."""
+    with closing(_connect()) as connection:
+        connection.execute(
+            """INSERT INTO audit_logs(timestamp, method, path, status_code, duration_ms)
+               VALUES (?, ?, ?, ?, ?)""",
+            (
+                datetime.now(timezone.utc).isoformat(),
+                method,
+                path,
+                status_code,
+                round(duration_ms, 2),
+            ),
+        )
+        connection.commit()
+
+
+def load_api_audit(limit: int = 100) -> list[dict[str, Any]]:
+    initialize_store()
+    with closing(_connect()) as connection:
+        rows = connection.execute(
+            """SELECT id, timestamp, method, path, status_code, duration_ms
+               FROM audit_logs ORDER BY id DESC LIMIT ?""",
+            (max(1, min(limit, 500)),),
+        ).fetchall()
+    return [dict(row) for row in rows]
