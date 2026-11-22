@@ -110,6 +110,7 @@ def process_event(raw: dict[str, Any]) -> dict[str, Any]:
             "severity": result["severity"],
             "risk_score": result["risk_score"],
             "title": result["reasons"][0],
+            "reasons": result["reasons"],
             "status": "open",
             "notes": [],
         }
