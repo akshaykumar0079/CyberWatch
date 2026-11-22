@@ -23,7 +23,7 @@
 - [x] Durable event and alert persistence (SQLite, single-instance/local deployment)
 - [ ] Authentication and role-based access
 - [x] WebSocket event streaming with cursor support and polling fallback
-- [x] Alert acknowledgement and resolution API + dashboard actions
+- [x] Alert acknowledgement, resolution, assignment, notes and status/severity filters
 - [x] Persist analyst investigation notes on alerts
 - [x] Free-text analyst assignment and unassignment in the SOC dashboard
 - [x] In-memory per-client API rate limiting for single-process deployments
