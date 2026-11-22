@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 from ml_engine.train import train
 from ml_engine.evaluate import evaluate
@@ -45,3 +46,13 @@ def test_chronological_split_excludes_timestamp_feature():
     _, report, features = train(frame, time_column="timestamp", seed=17)
     assert "weighted avg" in report
     assert "timestamp" not in features
+
+
+def test_group_aware_split_rejects_missing_group_identifiers():
+    frame = pd.DataFrame({
+        "duration": list(range(1, 11)),
+        "session_id": ["session-a"] * 5 + [None] * 5,
+        "Label": ["BENIGN", "ATTACK"] * 5,
+    })
+    with pytest.raises(ValueError, match="contains missing values"):
+        train(frame, group_column="session_id")
