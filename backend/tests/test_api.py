@@ -137,3 +137,14 @@ def test_alert_note_rejects_blank_text_and_unknown_alert():
     alert_id = client.get("/api/alerts").json()["items"][0]["id"]
     blank = client.post(f"/api/alerts/{alert_id}/notes", json={"text": "   "})
     assert blank.status_code == 422
+
+
+def test_websocket_streams_existing_events_from_cursor():
+    client.post("/api/events", json={
+        "src_ip": "198.51.100.22", "dst_ip": "10.0.0.8",
+        "dst_port": 443, "bytes": 1200, "packets": 14,
+    })
+    with client.websocket_connect("/ws/events?after_id=0") as websocket:
+        message = websocket.receive_json()
+        assert message["type"] == "security_event"
+        assert message["data"]["src_ip"] == "198.51.100.22"
