@@ -25,3 +25,23 @@ def test_random_forest_training_and_evaluation():
     assert "weighted avg" in report
     assert 0 <= result["accuracy"] <= 1
     assert result["samples"] == len(holdout)
+
+
+def test_group_aware_split_excludes_group_identifier():
+    frame = pd.DataFrame({
+        "duration": list(range(1, 21)),
+        "protocol": ["tcp", "udp"] * 10,
+        "session_id": [f"session-{index // 2}" for index in range(20)],
+        "Label": ["BENIGN", "ATTACK"] * 10,
+    })
+    _, report, features = train(frame, group_column="session_id", seed=13)
+    assert "weighted avg" in report
+    assert "session_id" not in features
+
+
+def test_chronological_split_excludes_timestamp_feature():
+    frame = sample_frame()
+    frame["timestamp"] = pd.date_range("2026-01-01", periods=len(frame), freq="h")
+    _, report, features = train(frame, time_column="timestamp", seed=17)
+    assert "weighted avg" in report
+    assert "timestamp" not in features
