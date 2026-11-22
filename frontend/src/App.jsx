@@ -28,7 +28,21 @@ export default function App() {
     } catch (err) { setError(err.message); }
   }, []);
 
-  useEffect(() => { refresh(); const timer = setInterval(refresh, 5000); return () => clearInterval(timer); }, [refresh]);
+  useEffect(() => {
+    refresh();
+    const timer = setInterval(refresh, 5000);
+    let socket;
+    try {
+      socket = new WebSocket(`${API.replace(/^http/, "ws")}/ws/events`);
+      socket.onmessage = () => refresh();
+    } catch {
+      // Five-second polling remains available if WebSocket is unavailable.
+    }
+    return () => {
+      clearInterval(timer);
+      socket?.close();
+    };
+  }, [refresh]);
 
   async function updateAlert(alertId, status) {
     try {
@@ -106,7 +120,7 @@ export default function App() {
         <article className="panel engine-panel"><div className="panel-heading"><div><h2>Detection engine</h2><p>Model and rule status</p></div><span className="engine-badge"><i/> ACTIVE</span></div>
           <div className="engine-item"><span className="engine-icon"><Zap size={17}/></span><div><b>Isolation Forest</b><small>Unsupervised anomaly detection</small></div><span className="check">READY</span></div>
           <div className="engine-item"><span className="engine-icon"><ShieldCheck size={17}/></span><div><b>Security rule engine</b><small>Brute force · port scan · privilege</small></div><span className="check">READY</span></div>
-          <div className="engine-item"><span className="engine-icon"><Server size={17}/></span><div><b>REST API</b><small>FastAPI event ingestion</small></div><span className="check">READY</span></div>
+          <div className="engine-item"><span className="engine-icon"><Server size={17}/></span><div><b>REST API</b><small>FastAPI + WebSocket event stream</small></div><span className="check">READY</span></div>
           <div className="engine-foot"><span>Auto refresh: 5 seconds</span><span>Updated {lastUpdated || "—"}</span></div>
         </article>
       </section>
