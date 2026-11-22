@@ -27,7 +27,7 @@
 - [x] Persist analyst investigation notes on alerts
 - [ ] Incident assignment and ownership
 - [x] In-memory per-client API rate limiting for single-process deployments
-- [ ] Durable request audit log and distributed rate limiting
+- [x] Metadata-only API write audit log persisted in SQLite\n- [ ] Distributed rate limiting for multi-instance deployments
 - [ ] Deployment configuration and security review
 
 ## Research integrity
