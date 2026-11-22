@@ -82,7 +82,7 @@ Then open the dashboard and inspect the alerts.
 | POST | `/api/events` | Ingest JSON events |
 | POST | `/api/events/demo` | Load safe demo events |
 | POST | `/api/events/upload` | Upload CSV events |
-| GET | `/api/alerts` | List generated alerts |
+| GET | `/api/alerts` | List alerts; supports `status`, `severity` and `limit` filters |\n| PATCH | `/api/alerts/{id}` | Change alert status to `open`, `acknowledged` or `resolved` |
 | GET | `/api/metrics` | Dashboard metrics |
 
 ## Event CSV format
