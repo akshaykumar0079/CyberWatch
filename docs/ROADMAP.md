@@ -20,10 +20,10 @@
 - [ ] Model card with limitations and dataset provenance
 
 ## Platform engineering
-- [ ] Durable event and alert persistence
+- [x] Durable event and alert persistence (SQLite, single-instance/local deployment)
 - [ ] Authentication and role-based access
 - [ ] WebSocket event streaming
-- [ ] Alert acknowledgement and incident notes
+- [x] Alert acknowledgement and resolution API + dashboard actions\n- [ ] Incident notes and assignment
 - [ ] API rate limiting and request audit
 - [ ] Deployment configuration and security review
 
