@@ -78,6 +78,10 @@ class AlertNoteInput(BaseModel):
     text: str = Field(min_length=1, max_length=1000)
 
 
+class AlertAssigneeInput(BaseModel):
+    assignee: str | None = Field(default=None, max_length=80)
+
+
 class SecurityEvent(BaseModel):
     timestamp: str | None = None
     src_ip: str = "0.0.0.0"
@@ -226,6 +230,21 @@ def add_alert_note(alert_id: int, payload: AlertNoteInput) -> dict:
     if cached is not None:
         cached["notes"] = updated["notes"]
     return {"item": updated}
+
+@app.patch("/api/alerts/{alert_id}/assignee")
+def set_alert_assignee(alert_id: int, payload: AlertAssigneeInput) -> dict:
+    """Assign an alert to an analyst or clear its assignment."""
+    assignee = payload.assignee.strip() if payload.assignee else None
+    if payload.assignee is not None and not assignee:
+        raise HTTPException(status_code=422, detail="Assignee cannot be blank")
+    updated = storage.assign_alert(alert_id, assignee)
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    cached = next((item for item in ALERTS if item["id"] == alert_id), None)
+    if cached is not None:
+        cached["assignee"] = assignee
+    return {"item": updated}
+
 
 @app.get("/api/audit")
 def list_api_audit(limit: int = Query(default=100, ge=1, le=500)) -> dict:
