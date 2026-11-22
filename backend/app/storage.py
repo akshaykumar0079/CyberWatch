@@ -6,6 +6,7 @@ for a zero-service local setup; production deployments should use managed storag
 from __future__ import annotations
 
 import json
+from contextlib import closing
 import os
 import sqlite3
 from pathlib import Path
@@ -23,7 +24,7 @@ def _connect() -> sqlite3.Connection:
 
 
 def initialize_store() -> None:
-    with _connect() as connection:
+    with closing(_connect()) as connection:
         connection.execute(
             """CREATE TABLE IF NOT EXISTS events (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
