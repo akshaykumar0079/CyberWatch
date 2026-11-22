@@ -108,3 +108,32 @@ def test_csv_upload_rejects_non_csv_file():
         files={"file": ("events.txt", "not a csv", "text/plain")},
     )
     assert response.status_code == 400
+
+
+def test_alert_investigation_notes_are_persisted():
+    client.post("/api/events", json={
+        "src_ip": "203.0.113.18", "dst_ip": "10.0.0.5",
+        "dst_port": 22, "bytes": 700, "packets": 12,
+        "failed_logins": 10, "event_type": "authentication",
+    })
+    alert_id = client.get("/api/alerts").json()["items"][0]["id"]
+    response = client.post(
+        f"/api/alerts/{alert_id}/notes",
+        json={"text": "Confirmed repeated SSH authentication failures."},
+    )
+    assert response.status_code == 200
+    assert response.json()["item"]["notes"][0]["text"] == "Confirmed repeated SSH authentication failures."
+    assert storage.load_alerts()[0]["notes"][0]["text"] == "Confirmed repeated SSH authentication failures."
+
+
+def test_alert_note_rejects_blank_text_and_unknown_alert():
+    missing = client.post("/api/alerts/999/notes", json={"text": "note"})
+    assert missing.status_code == 404
+    client.post("/api/events", json={
+        "src_ip": "203.0.113.19", "dst_ip": "10.0.0.5",
+        "dst_port": 22, "bytes": 700, "packets": 12,
+        "failed_logins": 10, "event_type": "authentication",
+    })
+    alert_id = client.get("/api/alerts").json()["items"][0]["id"]
+    blank = client.post(f"/api/alerts/{alert_id}/notes", json={"text": "   "})
+    assert blank.status_code == 422
