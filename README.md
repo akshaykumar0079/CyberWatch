@@ -78,6 +78,16 @@ curl -X POST http://127.0.0.1:8000/api/events/demo
 
 Then open the dashboard and inspect the alerts.
 
+## Run with Docker Compose
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+The dashboard is available at http://localhost:5173 and the API at http://localhost:8000. Compose stores the SQLite database in a named volume and waits for the API health check before starting the dashboard.
+
 ## API endpoints
 
 | Method | Endpoint | Purpose |
