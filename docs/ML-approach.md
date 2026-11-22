@@ -21,9 +21,9 @@ Isolation Forest is an unsupervised outlier-detection method. It can be used whe
 - The bundled baseline is synthetic and is intended only to make the demo run without downloading a dataset.
 - Port numbers are categorical in meaning; this MVP treats them as numeric for a compact demonstration. A serious experiment should use suitable categorical encoding or domain-specific features.
 - The detector is fitted on startup and is not persisted.
-- Events and alerts are held in process memory and are cleared when the API restarts.
+- Events and alerts persist in SQLite for local single-instance deployments.
 - The demo risk score is heuristic, not a calibrated probability.
-- No authentication, tenant isolation, durable storage, or production-grade rate limiting is implemented.
+- No authentication, tenant isolation, or production-grade rate limiting is implemented.
 
 ## Suggested research evaluation
 
@@ -38,3 +38,8 @@ Isolation Forest is an unsupervised outlier-detection method. It can be used whe
 Official dataset pages:
 - https://www.unb.ca/cic/datasets/ids-2017.html
 - https://research.unsw.edu.au/projects/unsw-nb15-dataset
+
+
+## Leakage-resistant evaluation
+
+The supervised trainer defaults to a stratified random holdout. For datasets containing repeated sessions or hosts, pass --group-column to keep each group on only one side of the split. For timestamped traffic, pass --time-column to train on earlier rows and hold out the latest 20%. These options are mutually exclusive. The chosen identifier/time column is excluded from model features. A real benchmark should select the split strategy based on the dataset's collection process.
