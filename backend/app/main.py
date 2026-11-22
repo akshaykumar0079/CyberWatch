@@ -4,13 +4,14 @@ from __future__ import annotations
 import csv
 import io
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import FastAPI, File, HTTPException, UploadFile, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from .detector import ThreatDetector
+from . import storage
 
 app = FastAPI(
     title="CyberWatch API",
@@ -27,8 +28,13 @@ app.add_middleware(
 )
 
 detector = ThreatDetector()
-EVENTS: list[dict[str, Any]] = []
-ALERTS: list[dict[str, Any]] = []
+storage.initialize_store()
+EVENTS: list[dict[str, Any]] = storage.load_events()
+ALERTS: list[dict[str, Any]] = storage.load_alerts()
+
+
+class AlertStatusUpdate(BaseModel):
+    status: Literal["open", "acknowledged", "resolved"]
 
 
 class SecurityEvent(BaseModel):
@@ -49,19 +55,20 @@ def process_event(raw: dict[str, Any]) -> dict[str, Any]:
     event = SecurityEvent(**raw).model_dump()
     event["timestamp"] = event["timestamp"] or datetime.now(timezone.utc).isoformat()
     result = detector.analyze(event)
-    event_id = len(EVENTS) + 1
-    record = {"id": event_id, **event, **result}
+    record = storage.save_event({**event, **result})
     EVENTS.append(record)
     if result["is_anomaly"]:
-        ALERTS.insert(0, {
-            "id": event_id,
+        alert = {
+            "id": record["id"],
             "timestamp": event["timestamp"],
             "src_ip": event["src_ip"],
             "severity": result["severity"],
             "risk_score": result["risk_score"],
             "title": result["reasons"][0],
             "status": "open",
-        })
+        }
+        storage.save_alert(alert)
+        ALERTS.insert(0, alert)
     return record
 
 
