@@ -150,6 +150,10 @@ def record_api_audit(method: str, path: str, status_code: int, duration_ms: floa
                 round(duration_ms, 2),
             ),
         )
+        # Keep the most recent 10,000 records to bound local database growth.
+        connection.execute(
+            "DELETE FROM audit_logs WHERE id <= (SELECT MAX(id) - 10000 FROM audit_logs)"
+        )
         connection.commit()
 
 
