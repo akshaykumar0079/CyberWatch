@@ -16,7 +16,7 @@ def calibrate_threshold(
     max_fpr: float = 0.01,
 ) -> dict:
     """Maximize recall while keeping the false-positive rate <= max_fpr."""
-    y_true = np.asarray([str(label) == positive_label for label in labels], dtype=bool)
+    y_true = np.asarray([str(label).strip() == positive_label.strip() for label in labels], dtype=bool)
     values = np.asarray(scores, dtype=float)
     if y_true.ndim != 1 or values.ndim != 1 or len(y_true) != len(values):
         raise ValueError("Labels and scores must be one-dimensional arrays of equal length.")
