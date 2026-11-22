@@ -9,6 +9,7 @@ import json
 from contextlib import closing
 import os
 import sqlite3
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -100,3 +101,25 @@ def reset_store() -> None:
         connection.execute("DELETE FROM events")
         connection.execute("DELETE FROM sqlite_sequence WHERE name = 'events'")
         connection.commit()
+
+
+def append_alert_note(alert_id: int, note: str) -> dict[str, Any] | None:
+    """Append an analyst note to an alert and return its updated record."""
+    with closing(_connect()) as connection:
+        row = connection.execute(
+            "SELECT payload, status FROM alerts WHERE id = ?", (alert_id,)
+        ).fetchone()
+        if row is None:
+            return None
+        payload = json.loads(row["payload"])
+        notes = payload.setdefault("notes", [])
+        notes.append({
+            "text": note.strip(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        })
+        connection.execute(
+            "UPDATE alerts SET payload = ? WHERE id = ?",
+            (json.dumps(payload, separators=(",", ":")), alert_id),
+        )
+        connection.commit()
+    return {**payload, "id": alert_id, "status": row["status"]}
