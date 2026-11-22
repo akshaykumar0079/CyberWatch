@@ -26,6 +26,16 @@ UNSW-NB15: https://research.unsw.edu.au/projects/unsw-nb15-dataset
 
 Review each dataset's terms before use. Keep raw data outside Git. Start with a representative subset while developing.
 
+## Risk-score threshold calibration
+
+A validation CSV that already contains a risk_score column can be used to select a threshold under a maximum false-positive-rate constraint:
+
+```bash
+python -m ml_engine.calibrate_threshold --input /path/to/scored_validation.csv --target Label --score-column risk_score --positive-label ATTACK --max-fpr 0.01
+```
+
+Use a labelled validation set, not the final test set. This utility reports a suggested threshold and validation precision/recall/FPR; it does not automatically change the live API detector. Real-data calibration remains pending until a documented dataset has been scored and reviewed.
+
 ## Methodology
 
 - Numeric feature columns are median-imputed and standardized.
