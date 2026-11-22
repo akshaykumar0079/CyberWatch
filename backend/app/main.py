@@ -4,15 +4,18 @@ from __future__ import annotations
 import asyncio
 import csv
 import io
+import os
 from datetime import datetime, timezone
 from typing import Any, Literal
 
-from fastapi import FastAPI, File, HTTPException, UploadFile, Query, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, File, HTTPException, UploadFile, Query, WebSocket, WebSocketDisconnect, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from .detector import ThreatDetector
 from . import storage
+from .security import SlidingWindowRateLimiter
 
 app = FastAPI(
     title="CyberWatch API",
@@ -27,6 +30,25 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+rate_limiter = SlidingWindowRateLimiter(
+    limit=int(os.getenv("CYBERWATCH_RATE_LIMIT_PER_MINUTE", "120")),
+    window_seconds=60,
+)
+
+
+@app.middleware("http")
+async def enforce_api_rate_limit(request: Request, call_next):
+    if request.url.path.startswith("/api/") and request.method != "OPTIONS":
+        client_key = request.client.host if request.client else "unknown"
+        if not rate_limiter.allow(client_key):
+            return JSONResponse(
+                status_code=429,
+                content={"detail": "Rate limit exceeded. Retry in a minute."},
+                headers={"Retry-After": "60"},
+            )
+    return await call_next(request)
+
 
 detector = ThreatDetector()
 storage.initialize_store()
