@@ -53,4 +53,4 @@ Before making performance claims:
 
 ## Privacy and operations
 
-The local API stores ingested events and alerts in SQLite by default. Database files are not encrypted by this application. Use sanitized demo data unless the deployment has an approved security and retention design. Do not expose the demo API publicly without authentication, access control, TLS, monitoring and a security review.
+The local API stores ingested events and alerts in SQLite by default. Database files are not encrypted by this application. Use sanitized demo data unless the deployment has an approved security and retention design. Do not expose the demo API publicly without authentication, access control, TLS, distributed rate limiting, monitoring and a security review. The included per-client limiter is in-memory and intended only for a single-process demo.
