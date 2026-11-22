@@ -86,3 +86,25 @@ def test_events_and_alerts_survive_store_reload():
     alert_id = persisted_alerts[0]["id"]
     client.patch(f"/api/alerts/{alert_id}", json={"status": "resolved"})
     assert storage.load_alerts()[0]["status"] == "resolved"
+
+
+def test_csv_upload_ingests_valid_rows():
+    csv_content = (
+        "timestamp,src_ip,dst_ip,src_port,dst_port,protocol,bytes,packets,failed_logins\n"
+        "2026-11-22T10:00:00Z,192.0.2.30,192.0.2.40,51000,22,TCP,900,8,7\n"
+    )
+    response = client.post(
+        "/api/events/upload",
+        files={"file": ("events.csv", csv_content, "text/csv")},
+    )
+    assert response.status_code == 200
+    assert response.json()["accepted"] == 1
+    assert client.get("/api/events").json()["total"] == 1
+
+
+def test_csv_upload_rejects_non_csv_file():
+    response = client.post(
+        "/api/events/upload",
+        files={"file": ("events.txt", "not a csv", "text/plain")},
+    )
+    assert response.status_code == 400
