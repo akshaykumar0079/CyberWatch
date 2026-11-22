@@ -201,3 +201,8 @@ def test_alert_filters_combine_status_and_severity():
         "/api/alerts", params={"status": "resolved", "severity": "high"}
     )
     assert no_match.json()["total"] == 0
+
+
+def test_event_list_rejects_out_of_range_limits():
+    assert client.get("/api/events", params={"limit": 0}).status_code == 422
+    assert client.get("/api/events", params={"limit": 501}).status_code == 422
