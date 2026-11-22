@@ -87,6 +87,10 @@ def main() -> None:
     (output / "training_report.json").write_text(json.dumps({
         "target": args.target, "features": features, "metrics": report,
         "random_state": args.seed,
+        "split_strategy": "group" if args.group_column else "chronological" if args.time_column else "stratified_random",
+        "group_column": args.group_column,
+        "time_column": args.time_column,
+        "test_size": 0.2,
     }, indent=2))
     print(f"Model saved to {output / 'random_forest.joblib'}")
     print(f"Weighted F1: {report.get('weighted avg', {}).get('f1-score', 0):.4f}")
