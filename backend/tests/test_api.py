@@ -31,7 +31,9 @@ def test_ingest_and_metrics():
     response = client.post("/api/events", json=event)
     assert response.status_code == 200
     assert response.json()["accepted"] == 1
-    assert len(client.get("/api/alerts").json()["items"]) >= 1
+    alerts = client.get("/api/alerts").json()["items"]
+    assert len(alerts) >= 1
+    assert alerts[0]["reasons"]
     assert client.get("/api/metrics").json()["total_events"] == 1
 
 
