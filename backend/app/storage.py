@@ -166,3 +166,21 @@ def load_api_audit(limit: int = 100) -> list[dict[str, Any]]:
             (max(1, min(limit, 500)),),
         ).fetchall()
     return [dict(row) for row in rows]
+
+
+def assign_alert(alert_id: int, assignee: str | None) -> dict[str, Any] | None:
+    """Set or clear the free-text owner of an alert."""
+    with closing(_connect()) as connection:
+        row = connection.execute(
+            "SELECT payload, status FROM alerts WHERE id = ?", (alert_id,)
+        ).fetchone()
+        if row is None:
+            return None
+        payload = json.loads(row["payload"])
+        payload["assignee"] = assignee
+        connection.execute(
+            "UPDATE alerts SET payload = ? WHERE id = ?",
+            (json.dumps(payload, separators=(",", ":")), alert_id),
+        )
+        connection.commit()
+    return {**payload, "id": alert_id, "status": row["status"]}
