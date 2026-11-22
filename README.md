@@ -18,6 +18,15 @@ CyberWatch is a runnable portfolio MVP that accepts security events, scores susp
 
 > **Important:** This is a learning and demonstration project, not a production SIEM or a replacement for endpoint/network security controls. Do not upload confidential logs. The included baseline is synthetic; validate and retrain with an appropriately licensed real dataset before making operational claims. See [SECURITY.md](SECURITY.md) for deployment limitations.
 
+## Tech stack
+
+- Frontend: React 18, Vite 6, JavaScript, responsive CSS, Lucide icons
+- API: Python 3.11+, FastAPI, Pydantic
+- ML: scikit-learn, NumPy, pandas
+- Storage: SQLite for local single-instance persistence
+- Testing: pytest, FastAPI TestClient, frontend production build
+- Deployment: Docker, Docker Compose, GitHub Actions
+
 ## Architecture
 
 ```text
