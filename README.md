@@ -81,6 +81,7 @@ Then open the dashboard and inspect the alerts.
 | Method | Endpoint | Purpose |
 |---|---|---|
 | GET | `/health` | Service health |
+| WS | `/ws/events` | Stream new security events to connected dashboards |
 | GET | `/api/events` | List ingested events |
 | POST | `/api/events` | Ingest JSON events |
 | POST | `/api/events/demo` | Load safe demo events |
