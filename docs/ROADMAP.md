@@ -25,7 +25,7 @@
 - [x] WebSocket event streaming with cursor support and polling fallback
 - [x] Alert acknowledgement and resolution API + dashboard actions
 - [x] Persist analyst investigation notes on alerts
-- [ ] Incident assignment and ownership
+- [x] Free-text analyst assignment and unassignment in the SOC dashboard
 - [x] In-memory per-client API rate limiting for single-process deployments
 - [x] Metadata-only API write audit log persisted in SQLite
 - [ ] Distributed rate limiting for multi-instance deployments
