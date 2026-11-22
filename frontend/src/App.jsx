@@ -29,6 +29,23 @@ export default function App() {
 
   useEffect(() => { refresh(); const timer = setInterval(refresh, 5000); return () => clearInterval(timer); }, [refresh]);
 
+  async function updateAlert(alertId, status) {
+    try {
+      const response = await fetch(`${API}/api/alerts/${alertId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail || "Could not update alert");
+      }
+      await refresh();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
   async function loadDemo() {
     setBusy(true);
     try { const r = await fetch(`${API}/api/events/demo`, { method: "POST" }); if (!r.ok) throw new Error("Could not load demo events"); await refresh(); }
@@ -65,7 +82,7 @@ export default function App() {
       <section className="content-grid">
         <article className="panel alerts-panel"><div className="panel-heading"><div><h2>Priority alerts</h2><p>Most recent suspicious activity</p></div><span className="subtle">{alerts.length} TOTAL</span></div>
           {alerts.length === 0 ? <div className="empty"><ShieldCheck size={27}/><b>No alerts yet</b><span>Load demo data or upload a CSV to begin.</span></div> :
-            <div className="alert-list">{alerts.slice(0,8).map(a => <div className="alert-row" key={a.id}><span className={`severity ${a.severity}`}></span><div className="alert-copy"><b>{a.title}</b><small>{a.src_ip} · {new Date(a.timestamp).toLocaleString()}</small></div><strong className="risk">{a.risk_score}<small> RISK</small></strong></div>)}</div>}
+            <div className="alert-list">{alerts.slice(0,8).map(a => <div className="alert-row" key={a.id}><span className={`severity ${a.severity}`}></span><div className="alert-copy"><b>{a.title}</b><small>{a.src_ip} · {new Date(a.timestamp).toLocaleString()}</small><span className={`alert-status ${a.status}`}>{a.status}</span></div><strong className="risk">{a.risk_score}<small> RISK</small></strong><div className="alert-actions">{a.status === "open" && <button onClick={() => updateAlert(a.id, "acknowledged")}>Acknowledge</button>}{a.status !== "resolved" && <button onClick={() => updateAlert(a.id, "resolved")}>Resolve</button>}</div></div>)}</div>}
         </article>
         <article className="panel engine-panel"><div className="panel-heading"><div><h2>Detection engine</h2><p>Model and rule status</p></div><span className="engine-badge"><i/> ACTIVE</span></div>
           <div className="engine-item"><span className="engine-icon"><Zap size={17}/></span><div><b>Isolation Forest</b><small>Unsupervised anomaly detection</small></div><span className="check">READY</span></div>
