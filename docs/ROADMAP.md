@@ -29,7 +29,8 @@
 - [x] In-memory per-client API rate limiting for single-process deployments
 - [x] Metadata-only API write audit log persisted in SQLite
 - [ ] Distributed rate limiting for multi-instance deployments
-- [x] Docker Compose deployment, SQLite volume, API health check and CI image validation\n- [ ] Production authentication, TLS and security review
+- [x] Docker Compose deployment, SQLite volume, API health check and CI image validation
+- [ ] Production authentication, TLS and security review
 
 ## Research integrity
 
