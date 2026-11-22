@@ -135,19 +135,15 @@ def list_alerts(
 @app.patch("/api/alerts/{alert_id}")
 def update_alert_status(
     alert_id: int,
-    payload: dict,
+    payload: AlertStatusUpdate,
 ) -> dict:
     """Acknowledge or resolve an alert."""
-    status = payload.get("status")
-    if status not in {"acknowledged", "resolved", "open"}:
-        raise HTTPException(
-            status_code=422,
-            detail="status must be open, acknowledged, or resolved",
-        )
     alert = next((item for item in ALERTS if item["id"] == alert_id), None)
     if alert is None:
         raise HTTPException(status_code=404, detail="Alert not found")
-    alert["status"] = status
+    if not storage.set_alert_status(alert_id, payload.status):
+        raise HTTPException(status_code=404, detail="Alert not found")
+    alert["status"] = payload.status
     return {"item": alert}
 
 
