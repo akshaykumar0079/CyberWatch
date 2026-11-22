@@ -104,7 +104,7 @@ Optional: `username,event_type`
 
 The detector uses scikit-learn's Isolation Forest over numeric traffic/authentication features. It is fitted on a deterministic synthetic normal-traffic baseline at startup. A separate rule engine adds explainable detections. The demo dataset is synthetic and deliberately includes a few suspicious patterns.
 
-For a research-grade extension, evaluate on CIC-IDS2017 or UNSW-NB15, prevent train/test leakage, report precision/recall/F1 and false-positive rate, and document dataset licensing and preprocessing. See the [model card](docs/MODEL_CARD.md) for the current model inventory, intended use and limitations.
+For a research-grade extension, evaluate on CIC-IDS2017 or UNSW-NB15, prevent train/test leakage, report precision/recall/F1 and false-positive rate, and document dataset licensing and preprocessing. See the [model card](docs/MODEL_CARD.md) for the current model inventory, intended use and limitations. The offline ML toolkit also includes group/time-aware splitting and false-positive-constrained risk-score calibration.
 
 ## Tests
 
