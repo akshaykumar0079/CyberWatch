@@ -181,3 +181,20 @@ def test_alert_assignment_is_persisted_and_can_be_cleared():
         f"/api/alerts/{alert_id}/assignee", json={"assignee": None}
     )
     assert cleared.json()["item"]["assignee"] is None
+
+
+def test_alert_filters_combine_status_and_severity():
+    client.post("/api/events", json={
+        "src_ip": "198.51.100.55", "dst_ip": "10.0.0.5",
+        "dst_port": 22, "bytes": 700, "packets": 12,
+        "failed_logins": 10, "event_type": "authentication",
+    })
+    matching = client.get(
+        "/api/alerts", params={"status": "open", "severity": "high"}
+    )
+    assert matching.status_code == 200
+    assert matching.json()["total"] == 1
+    no_match = client.get(
+        "/api/alerts", params={"status": "resolved", "severity": "high"}
+    )
+    assert no_match.json()["total"] == 0
