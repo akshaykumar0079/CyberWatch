@@ -5,6 +5,7 @@ import asyncio
 import csv
 import io
 import os
+import time
 from datetime import datetime, timezone
 from typing import Any, Literal
 
@@ -39,14 +40,27 @@ rate_limiter = SlidingWindowRateLimiter(
 
 @app.middleware("http")
 async def enforce_api_rate_limit(request: Request, call_next):
-    if request.url.path.startswith("/api/") and request.method != "OPTIONS":
+    is_api = request.url.path.startswith("/api/") and request.method != "OPTIONS"
+    is_write = is_api and request.method in {"POST", "PATCH", "PUT", "DELETE"}
+    started = time.perf_counter()
+    if is_api:
         client_key = request.client.host if request.client else "unknown"
         if not rate_limiter.allow(client_key):
-            return JSONResponse(
+            response = JSONResponse(
                 status_code=429,
                 content={"detail": "Rate limit exceeded. Retry in a minute."},
                 headers={"Retry-After": "60"},
             )
+        else:
+            response = await call_next(request)
+        if is_write:
+            storage.record_api_audit(
+                request.method,
+                request.url.path,
+                response.status_code,
+                (time.perf_counter() - started) * 1000,
+            )
+        return response
     return await call_next(request)
 
 
@@ -212,6 +226,13 @@ def add_alert_note(alert_id: int, payload: AlertNoteInput) -> dict:
     if cached is not None:
         cached["notes"] = updated["notes"]
     return {"item": updated}
+
+@app.get("/api/audit")
+def list_api_audit(limit: int = Query(default=100, ge=1, le=500)) -> dict:
+    """List metadata-only audit entries for API write operations."""
+    items = storage.load_api_audit(limit)
+    return {"items": items, "total": len(items)}
+
 
 @app.get("/api/metrics")
 def metrics() -> dict:
