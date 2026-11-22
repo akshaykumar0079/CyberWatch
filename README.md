@@ -6,7 +6,7 @@ CyberWatch is a runnable portfolio MVP that accepts security events, scores susp
 
 ## Features
 
-- FastAPI backend with health, event ingestion, CSV upload, alert and metric endpoints
+- FastAPI backend with health, event ingestion, CSV upload, alert and metric endpoints\n- SQLite persistence for events and alert status across API restarts
 - Isolation Forest anomaly detection trained on a bundled synthetic baseline
 - Explainable rule detections for brute-force attempts, port scans and suspicious privilege events
 - Risk scoring and alert severity
@@ -61,7 +61,7 @@ npm run dev
 
 Dashboard: http://localhost:5173
 
-The frontend uses the API at `http://127.0.0.1:8000`. Set `VITE_API_URL` to override it.
+The frontend uses the API at `http://127.0.0.1:8000`. Set `VITE_API_URL` to override it.\n\nThe API creates `backend/cyberwatch.db` automatically. Set `CYBERWATCH_DB_PATH` to use a different SQLite file location.
 
 ### 3. Try sample events
 
@@ -107,7 +107,7 @@ pytest
 ## Roadmap
 
 - [ ] CIC-IDS2017 preprocessing and reproducible evaluation
-- [ ] Persist events and alerts in MongoDB
+- [x] Persist events and alerts in SQLite (local development)\n- [ ] Add managed database support for multi-instance production deployments
 - [ ] Authentication and role-based access
 - [ ] WebSocket streaming
 - [ ] Model versioning and drift monitoring
