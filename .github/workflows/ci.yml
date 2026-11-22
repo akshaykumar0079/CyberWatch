@@ -32,3 +32,10 @@ jobs:
           node-version: "20"
       - run: npm install
       - run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t cyberwatch-api ./backend
+      - run: docker compose config --quiet
