@@ -6,7 +6,7 @@ import io
 from datetime import datetime, timezone
 from typing import Any
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, HTTPException, UploadFile, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -118,8 +118,37 @@ def load_demo() -> dict:
 
 
 @app.get("/api/alerts")
-def list_alerts() -> dict:
-    return {"items": ALERTS[:200], "total": len(ALERTS)}
+def list_alerts(
+    status: str | None = Query(default=None, pattern="^(open|acknowledged|resolved)$"),
+    severity: str | None = Query(default=None, pattern="^(critical|high|medium|low)$"),
+    limit: int = Query(default=100, ge=1, le=500),
+) -> dict:
+    """List alerts with optional status/severity filters."""
+    filtered = ALERTS
+    if status:
+        filtered = [alert for alert in filtered if alert["status"] == status]
+    if severity:
+        filtered = [alert for alert in filtered if alert["severity"] == severity]
+    return {"items": filtered[:limit], "total": len(filtered)}
+
+
+@app.patch("/api/alerts/{alert_id}")
+def update_alert_status(
+    alert_id: int,
+    payload: dict,
+) -> dict:
+    """Acknowledge or resolve an alert."""
+    status = payload.get("status")
+    if status not in {"acknowledged", "resolved", "open"}:
+        raise HTTPException(
+            status_code=422,
+            detail="status must be open, acknowledged, or resolved",
+        )
+    alert = next((item for item in ALERTS if item["id"] == alert_id), None)
+    if alert is None:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    alert["status"] = status
+    return {"item": alert}
 
 
 @app.get("/api/metrics")
