@@ -17,6 +17,8 @@ jobs:
       - run: pip install -r backend/requirements.txt
       - run: pytest
         working-directory: backend
+      - run: pytest ml_engine/tests
+        working-directory: .
 
   frontend:
     runs-on: ubuntu-latest
