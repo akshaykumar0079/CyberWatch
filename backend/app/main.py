@@ -1,12 +1,13 @@
 """CyberWatch REST API."""
 from __future__ import annotations
 
+import asyncio
 import csv
 import io
 from datetime import datetime, timezone
 from typing import Any, Literal
 
-from fastapi import FastAPI, File, HTTPException, UploadFile, Query
+from fastapi import FastAPI, File, HTTPException, UploadFile, Query, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -75,6 +76,22 @@ def process_event(raw: dict[str, Any]) -> dict[str, Any]:
         storage.save_alert(alert)
         ALERTS.insert(0, alert)
     return record
+
+
+@app.websocket("/ws/events")
+async def stream_events(websocket: WebSocket) -> None:
+    """Stream stored and newly ingested events to connected SOC dashboards."""
+    await websocket.accept()
+    last_seen_id = 0
+    try:
+        while True:
+            for event in EVENTS:
+                if event["id"] > last_seen_id:
+                    await websocket.send_json({"type": "security_event", "data": event})
+                    last_seen_id = event["id"]
+            await asyncio.sleep(1)
+    except WebSocketDisconnect:
+        return
 
 
 @app.get("/health")
