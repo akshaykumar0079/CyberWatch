@@ -7,7 +7,8 @@ CyberWatch is a runnable portfolio MVP that accepts security events, scores susp
 ## Features
 
 - FastAPI backend with health, event ingestion, CSV upload, alert and metric endpoints
-- SQLite persistence for events and alert status across API restarts\n- Per-client sliding-window rate limiting for API requests
+- SQLite persistence for events and alert status across API restarts
+- Per-client sliding-window rate limiting for API requests
 - Isolation Forest anomaly detection trained on a bundled synthetic baseline
 - Explainable rule detections for brute-force attempts, port scans and suspicious privilege events
 - Risk scoring and alert severity
