@@ -15,8 +15,13 @@ def sample_frame():
 def test_random_forest_training_and_evaluation():
     frame = sample_frame()
     model, report, features = train(frame, seed=7)
-    result = evaluate(frame, "Label", model)
+    holdout = pd.DataFrame({
+        "duration": [21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+        "protocol": ["tcp", "udp"] * 5,
+        "Label": ["BENIGN"] * 5 + ["ATTACK"] * 5,
+    })
+    result = evaluate(holdout, "Label", model)
     assert "duration" in features
     assert "weighted avg" in report
     assert 0 <= result["accuracy"] <= 1
-    assert result["samples"] == len(frame)
+    assert result["samples"] == len(holdout)
