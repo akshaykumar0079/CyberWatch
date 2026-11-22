@@ -87,6 +87,7 @@ Then open the dashboard and inspect the alerts.
 | POST | `/api/events/upload` | Upload CSV events |
 | GET | `/api/alerts` | List alerts; supports `status`, `severity` and `limit` filters |
 | PATCH | `/api/alerts/{id}` | Change alert status to `open`, `acknowledged` or `resolved` |
+| POST | `/api/alerts/{id}/notes` | Add an investigation note to an alert |
 | GET | `/api/metrics` | Dashboard metrics |
 
 ## Event CSV format
