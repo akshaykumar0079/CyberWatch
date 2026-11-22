@@ -35,6 +35,7 @@ def test_ingest_and_metrics():
     assert len(alerts) >= 1
     assert alerts[0]["reasons"]
     assert client.get("/api/metrics").json()["total_events"] == 1
+    assert client.get("/api/metrics").json()["flagged_rate"] == 100.0
 
 
 def test_demo_endpoint():
