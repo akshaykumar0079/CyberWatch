@@ -23,7 +23,7 @@
 - [x] Durable event and alert persistence (SQLite, single-instance/local deployment)
 - [ ] Authentication and role-based access
 - [ ] WebSocket event streaming
-- [x] Alert acknowledgement and resolution API + dashboard actions\n- [ ] Incident notes and assignment
+- [x] Alert acknowledgement and resolution API + dashboard actions\n- [x] Persist analyst investigation notes on alerts\n- [ ] Incident assignment and ownership
 - [ ] API rate limiting and request audit
 - [ ] Deployment configuration and security review
 
