@@ -13,7 +13,7 @@ CyberWatch is a runnable portfolio MVP that accepts security events, scores susp
 - Isolation Forest anomaly detection trained on a bundled synthetic baseline
 - Explainable rule detections for brute-force attempts, port scans and suspicious privilege events
 - Risk scoring and alert severity
-- React dashboard with event/alert summaries and live refresh
+- React dashboard with event/alert summaries, status/severity filters and WebSocket live refresh
 - Sample CSV, automated backend tests and Docker Compose setup
 
 > **Important:** This is a learning and demonstration project, not a production SIEM or a replacement for endpoint/network security controls. Do not upload confidential logs. The included baseline is synthetic; validate and retrain with an appropriately licensed real dataset before making operational claims. See [SECURITY.md](SECURITY.md) for deployment limitations.
