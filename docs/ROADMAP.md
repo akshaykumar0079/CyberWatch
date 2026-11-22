@@ -17,7 +17,7 @@
 - [ ] UNSW-NB15 external validation
 - [ ] Group/time-aware split and leakage analysis
 - [ ] Threshold calibration and false-positive analysis
-- [ ] Model card with limitations and dataset provenance
+- [x] Model card with limitations and dataset provenance
 
 ## Platform engineering
 - [x] Durable event and alert persistence (SQLite, single-instance/local deployment)
