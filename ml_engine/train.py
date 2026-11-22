@@ -33,6 +33,8 @@ def train(
         if group_column not in data:
             raise ValueError(f"Group column {group_column!r} is missing.")
         groups = data.pop(group_column)
+        if groups.isna().any():
+            raise ValueError(f"Group column {group_column!r} contains missing values.")
         splitter = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=seed)
         train_idx, test_idx = next(splitter.split(data, y, groups))
         X_train, X_test = data.iloc[train_idx], data.iloc[test_idx]
