@@ -161,3 +161,23 @@ def test_api_write_requests_create_metadata_only_audit_entries():
     assert entry["status_code"] == 200
     assert "src_ip" not in entry
     assert "payload" not in entry
+
+
+def test_alert_assignment_is_persisted_and_can_be_cleared():
+    client.post("/api/events", json={
+        "src_ip": "203.0.113.45", "dst_ip": "10.0.0.5",
+        "dst_port": 22, "bytes": 700, "packets": 12,
+        "failed_logins": 10, "event_type": "authentication",
+    })
+    alert_id = client.get("/api/alerts").json()["items"][0]["id"]
+    assigned = client.patch(
+        f"/api/alerts/{alert_id}/assignee", json={"assignee": "SOC Analyst 1"}
+    )
+    assert assigned.status_code == 200
+    assert assigned.json()["item"]["assignee"] == "SOC Analyst 1"
+    assert storage.load_alerts()[0]["assignee"] == "SOC Analyst 1"
+
+    cleared = client.patch(
+        f"/api/alerts/{alert_id}/assignee", json={"assignee": None}
+    )
+    assert cleared.json()["item"]["assignee"] is None
