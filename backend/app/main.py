@@ -259,10 +259,12 @@ def metrics() -> dict:
     total = len(EVENTS)
     suspicious = sum(1 for event in EVENTS if event["is_anomaly"])
     severities = {name: sum(1 for alert in ALERTS if alert["severity"] == name) for name in ("critical", "high", "medium", "low")}
+    flagged_rate = round((suspicious / total) * 100, 1) if total else 0
     return {
         "total_events": total,
         "suspicious_events": suspicious,
         "open_alerts": sum(1 for alert in ALERTS if alert["status"] == "open"),
-        "detection_rate": round((suspicious / total) * 100, 1) if total else 0,
+        "flagged_rate": flagged_rate,
+        "detection_rate": flagged_rate,  # Backward-compatible alias; not model accuracy.
         "severity_breakdown": severities,
     }
