@@ -14,6 +14,7 @@ export default function App() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [lastUpdated, setLastUpdated] = useState("");
+  const [noteDrafts, setNoteDrafts] = useState({});
 
   const refresh = useCallback(async () => {
     try {
@@ -40,6 +41,24 @@ export default function App() {
         const data = await response.json();
         throw new Error(data.detail || "Could not update alert");
       }
+      await refresh();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function addAlertNote(alertId) {
+    const text = (noteDrafts[alertId] || "").trim();
+    if (!text) return;
+    try {
+      const response = await fetch(`${API}/api/alerts/${alertId}/notes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || "Could not save investigation note");
+      setNoteDrafts(current => ({ ...current, [alertId]: "" }));
       await refresh();
     } catch (err) {
       setError(err.message);
@@ -82,7 +101,7 @@ export default function App() {
       <section className="content-grid">
         <article className="panel alerts-panel"><div className="panel-heading"><div><h2>Priority alerts</h2><p>Most recent suspicious activity</p></div><span className="subtle">{alerts.length} TOTAL</span></div>
           {alerts.length === 0 ? <div className="empty"><ShieldCheck size={27}/><b>No alerts yet</b><span>Load demo data or upload a CSV to begin.</span></div> :
-            <div className="alert-list">{alerts.slice(0,8).map(a => <div className="alert-row" key={a.id}><span className={`severity ${a.severity}`}></span><div className="alert-copy"><b>{a.title}</b><small>{a.src_ip} · {new Date(a.timestamp).toLocaleString()}</small><span className={`alert-status ${a.status}`}>{a.status}</span></div><strong className="risk">{a.risk_score}<small> RISK</small></strong><div className="alert-actions">{a.status === "open" && <button onClick={() => updateAlert(a.id, "acknowledged")}>Acknowledge</button>}{a.status !== "resolved" && <button onClick={() => updateAlert(a.id, "resolved")}>Resolve</button>}</div></div>)}</div>}
+            <div className="alert-list">{alerts.slice(0,8).map(a => <div className="alert-row" key={a.id}><span className={`severity ${a.severity}`}></span><div className="alert-copy"><b>{a.title}</b><small>{a.src_ip} · {new Date(a.timestamp).toLocaleString()}</small><span className={`alert-status ${a.status}`}>{a.status}</span><details className="alert-notes"><summary>Investigation notes ({a.notes?.length ?? 0})</summary>{(a.notes || []).map((note, index) => <p key={index}>{note.text}<small>{new Date(note.created_at).toLocaleString()}</small></p>)}<div className="note-entry"><input aria-label="Investigation note" placeholder="Add an investigation note" maxLength={1000} value={noteDrafts[a.id] || ""} onChange={event => setNoteDrafts(current => ({ ...current, [a.id]: event.target.value }))}/><button onClick={() => addAlertNote(a.id)} disabled={!(noteDrafts[a.id] || "").trim()}>Add note</button></div></details></div><strong className="risk">{a.risk_score}<small> RISK</small></strong><div className="alert-actions">{a.status === "open" && <button onClick={() => updateAlert(a.id, "acknowledged")}>Acknowledge</button>}{a.status !== "resolved" && <button onClick={() => updateAlert(a.id, "resolved")}>Resolve</button>}</div></div>)}</div>}
         </article>
         <article className="panel engine-panel"><div className="panel-heading"><div><h2>Detection engine</h2><p>Model and rule status</p></div><span className="engine-badge"><i/> ACTIVE</span></div>
           <div className="engine-item"><span className="engine-icon"><Zap size={17}/></span><div><b>Isolation Forest</b><small>Unsupervised anomaly detection</small></div><span className="check">READY</span></div>
