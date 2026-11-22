@@ -109,6 +109,7 @@ The dashboard is available at http://localhost:5173 and the API at http://localh
 | POST | `/api/events/upload` | Upload CSV events |
 | GET | `/api/alerts` | List alerts; supports `status`, `severity` and `limit` filters |
 | PATCH | `/api/alerts/{id}` | Change alert status to `open`, `acknowledged` or `resolved` |
+| PATCH | `/api/alerts/{id}/assignee` | Assign or unassign an alert owner |
 | POST | `/api/alerts/{id}/notes` | Add an investigation note to an alert |
 | GET | `/api/metrics` | Dashboard metrics |
 | GET | `/api/audit` | Recent metadata-only API write audit entries |
