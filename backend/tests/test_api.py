@@ -148,3 +148,16 @@ def test_websocket_streams_existing_events_from_cursor():
         message = websocket.receive_json()
         assert message["type"] == "security_event"
         assert message["data"]["src_ip"] == "198.51.100.22"
+
+
+def test_api_write_requests_create_metadata_only_audit_entries():
+    response = client.post("/api/events/demo")
+    assert response.status_code == 200
+    audit = client.get("/api/audit").json()["items"]
+    assert audit
+    entry = audit[0]
+    assert entry["method"] == "POST"
+    assert entry["path"] == "/api/events/demo"
+    assert entry["status_code"] == 200
+    assert "src_ip" not in entry
+    assert "payload" not in entry
