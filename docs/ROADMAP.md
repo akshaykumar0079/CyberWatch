@@ -15,7 +15,7 @@
 - [x] Feature-importance export
 - [ ] CIC-IDS2017 benchmark with documented label mapping
 - [ ] UNSW-NB15 external validation
-- [ ] Group/time-aware split and leakage analysis
+- [x] Group-aware and chronological holdout split options with tests
 - [ ] Threshold calibration and false-positive analysis
 - [x] Model card with limitations and dataset provenance
 
