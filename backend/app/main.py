@@ -79,10 +79,10 @@ def process_event(raw: dict[str, Any]) -> dict[str, Any]:
 
 
 @app.websocket("/ws/events")
-async def stream_events(websocket: WebSocket) -> None:
+async def stream_events(websocket: WebSocket, after_id: int | None = None) -> None:
     """Stream stored and newly ingested events to connected SOC dashboards."""
     await websocket.accept()
-    last_seen_id = 0
+    last_seen_id = after_id if after_id is not None else (EVENTS[-1]["id"] if EVENTS else 0)
     try:
         while True:
             for event in EVENTS:
